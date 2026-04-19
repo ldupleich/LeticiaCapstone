@@ -5,6 +5,7 @@ INPUT_PATH  = "archive/Hospital_Management_System.sql"
 OUTPUT_PATH = "archive/Hospital_Management_System_postgres.sql"
 
 # Drop tables in reverse dependency order before recreating them
+# With this, we can rerun this file without errors that the tables already exist
 DROP_TABLES = """\
 DROP TABLE IF EXISTS SurgeryRecord CASCADE;
 DROP TABLE IF EXISTS StaffShift CASCADE;
@@ -23,7 +24,7 @@ DROP TABLE IF EXISTS Department CASCADE;
 """
 
 # REGEX NOTES
-# always start with ^ and end with $
+# always start with ^ and end with $ for T-SQL statements
 # multiline to go across each line
 # ^\s* -> leading whitespace
 # USE\s+ -> space after keyword
@@ -32,7 +33,7 @@ DROP TABLE IF EXISTS Department CASCADE;
 # r");\1\2" -> to put stuff back
 
 
-def convert_sql_postgres(sql: str) -> str:
+def convert_sql_postgres(sql):
 
     # Strip UTF-8 BOM
     sql = sql.lstrip("\ufeff")
@@ -62,7 +63,7 @@ with open(INPUT_PATH, "r", encoding="utf-8-sig") as f:
 
 clean = convert_sql_postgres(raw)
 
-# Output file
+# Output file (make a new directory)
 os.makedirs(os.path.dirname(OUTPUT_PATH) or ".", exist_ok=True)
 with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     f.write(clean)

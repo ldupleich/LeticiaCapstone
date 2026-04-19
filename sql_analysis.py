@@ -251,15 +251,15 @@ def single_table_1():
     """)
     result1 = cur.fetchall()
 
-    for result in result1:
-        print(result)
-    print(f" Total number of patients grouped by gender: {len(result1)}")
+    # for result in result1:
+        # print(result)
+    # print(f" Total number of patients grouped by gender: {len(result1)}")
 
-    elapsed, cpu_time = metrics.stop(start_time, process_before)
-    print(f" Execution time: {elapsed:.4f}s")
-    print(f" CPU time: {cpu_time}")
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
+    # print(f" Execution time: {elapsed:.4f}s")
+    # print(f" CPU time: {cpu_time}")
 
-    return elapsed, cpu_time
+    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
 # Single table 2
 def single_table_2():
@@ -275,48 +275,54 @@ def single_table_2():
     # print("\n")
     result2 = cur.fetchall()
     
-    for result in result2:
-        print(result)
-    print(f" Number of surgeries grouped by surgery type: {len(result2)}")
+    # for result in result2:
+        # print(result)
+    # print(f" Number of surgeries grouped by surgery type: {len(result2)}")
 
-    elapsed, cpu_time = metrics.stop(start_time, process_before)
-    print(f" Execution time: {elapsed:.4f}s")
-    print(f" CPU time: {cpu_time}")
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
+    # print(f" Execution time: {elapsed:.4f}s")
+    # print(f" CPU time: {cpu_time}")
 
-    return elapsed, cpu_time
+    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
-for i in range(10):
-    single_table_1()
 # Results
-"""
 n = 100
 time_rows = []
-cpu_rows = []
+cpu_time_rows = []
+cpu_percent_rows = []
 
 for i in range(n):
-    elapsed, cpu_time = single_table_1()
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_1()
     time_rows.append(["patients_by_gender", i, elapsed])
-    cpu_rows.append(["patients_by_gender", i, cpu_time])
+    cpu_time_rows.append(["patients_by_gender", i, cpu_time])
+    cpu_percent_rows.append(["patients_by_gender", i, cpu_percent])
 
 for i in range(n):
-    elapsed, cpu_time = single_table_2()
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_2()
     time_rows.append(["surgeries_by_type", i, elapsed])
-    cpu_rows.append(["surgeries_by_type", i, cpu_time])
+    cpu_time_rows.append(["surgeries_by_type", i, cpu_time])
+    cpu_percent_rows.append(["surgeries_by_type", i, cpu_percent])
 
+# Creating .csv files
 f = open("single_time_sql.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "elapsed_s"])
 writer.writerows(time_rows)
 f.close()
 
-f = open("single_cpu_sql.csv", "w", newline="")
+f = open("single_cpu_time_sql.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "cpu_time_s"])
-writer.writerows(cpu_rows)
+writer.writerows(cpu_time_rows)
 f.close()
-"""
 
-# Close cursor and connection
+f = open("single_cpu_percent_sql.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_percent"])
+writer.writerows(cpu_percent_rows)
+f.close()
+
+# Closing cursor and connection
 cur.close()
 conn.close()
 

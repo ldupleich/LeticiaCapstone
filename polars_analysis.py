@@ -188,14 +188,14 @@ def single_table_1(dataframes):
         .collect()
     )
     # print(result1)
-    # print(f"Number of patients grouped by gender: {len(result1.collect())}")
+    # print(f"Number of patients grouped by gender: {len(result1)}")
 
-    elapsed, cpu_time = metrics.stop(start_time, process_before)
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
     
     # print(f" Execution time: {elapsed:.4f}s")
     # print(f" CPU time: {cpu_time:.4f}s")
 
-    return elapsed, cpu_time
+    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
 # Single table 2
 def single_table_2(dataframes):
@@ -211,42 +211,50 @@ def single_table_2(dataframes):
     )
     # print("\n")
     # print(result2)
-    # print(f"Number of surgeries grouped by surgery type: {len(result2.collect())}")
+    # print(f"Number of surgeries grouped by surgery type: {len(result2)}")
     
-    elapsed, cpu_time = metrics.stop(start_time, process_before)
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
 
     # print(f" Execution time: {elapsed:.4f}s")
     # print(f" CPU time: {cpu_time:.4f}s")
 
-    return elapsed, cpu_time
+    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
 
 # Saving results
 n = 100
 time_rows = []
-cpu_rows = []
+cpu_time_rows = []
+cpu_percent_rows = []
 
 for i in range(n):
-    elapsed, cpu_time = single_table_1(dataframes)
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_1(dataframes)
     time_rows.append(["patients_by_gender", i, elapsed])
-    cpu_rows.append(["patients_by_gender", i, cpu_time])
+    cpu_time_rows.append(["patients_by_gender", i, cpu_time])
+    cpu_percent_rows.append(["patients_by_gender", i, cpu_percent_per_core])
 
 for i in range(n):
-    elapsed, cpu_time = single_table_2(dataframes)
+    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_2(dataframes)
     time_rows.append(["surgeries_by_type", i, elapsed])
-    cpu_rows.append(["surgeries_by_type", i, cpu_time])
+    cpu_time_rows.append(["surgeries_by_type", i, cpu_time])
+    cpu_percent_rows.append(["surgeries_by_type", i, cpu_percent_per_core])
 
+# Creating output .csv files
 f = open("single_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "elapsed_s"])
 writer.writerows(time_rows)
 f.close()
 
-f = open("single_cpu_polars.csv", "w", newline="")
+f = open("single_cpu_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "cpu_time_s"])
-writer.writerows(cpu_rows)
+writer.writerows(cpu_time_rows)
 f.close()
 
-
+f = open("single_cpu_percent_polars.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_percent"])
+writer.writerows(cpu_percent_rows)
+f.close()
 
