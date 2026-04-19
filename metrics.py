@@ -3,20 +3,16 @@ import psutil
 import os
 
 process = psutil.Process(os.getpid())
-start_time = None
-cpu_before = None
 
 def start():
-    psutil.cpu_percent(percpu=True)
-    process.cpu_percent()
+    process_before = process.cpu_times()
     start_time = time.time()
-    
-    return start_time
 
-def stop(start_time):
+    return start_time, process_before
+
+def stop(start_time, process_before):
     elapsed = time.time() - start_time
-    cpu_per_core = cpu_per_core = psutil.cpu_percent(percpu=True)
-    cpu_process = process.cpu_percent()
+    process_after = process.cpu_times()
+    cpu_time = (process_after.user - process_before.user) + (process_after.system - process_before.system)
 
-    return elapsed, cpu_per_core, cpu_process
-
+    return elapsed, cpu_time

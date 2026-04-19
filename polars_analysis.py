@@ -172,70 +172,81 @@ row_counts(dataframes)
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # AGGREGATION 1: Single table aggregation tasks
 
-print("\n")
-print("SINGLE TABLE AGGREGATION:")
+#print("\n")
+# print("SINGLE TABLE AGGREGATION:")
 
 # Single table 1
 def single_table_1(dataframes):
     """Groups patients by gender."""
-    start_time = metrics.start()
+    start_time, process_before = metrics.start()
 
     result1 = (
         dataframes["Patients"]
         .lazy() # recommended instead of eager
         .group_by("Gender")
         .agg(pl.len())
+        .collect()
     )
-    print(result1.collect())
-    print(f"Number of patients grouped by gender: {len(result1.collect())}")
+    # print(result1)
+    # print(f"Number of patients grouped by gender: {len(result1.collect())}")
 
-    elapsed, cpu_per_core, cpu_process = metrics.stop(start_time)
+    elapsed, cpu_time = metrics.stop(start_time, process_before)
+    
     # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU usage per core: {cpu_per_core}")
-    # print(f" CPU usage: {cpu_process}")
+    # print(f" CPU time: {cpu_time:.4f}s")
 
-    return elapsed, cpu_per_core, cpu_process
+    return elapsed, cpu_time
 
 # Single table 2
 def single_table_2(dataframes):
     """Groups number of surgeries by surgery type."""
-    start_time = metrics.start()
+    start_time, process_before = metrics.start()
 
     result2 = (
         dataframes["SurgeryRecord"]
         .lazy() # recommended instead of eager
         .group_by("surgery_Type")
         .agg(pl.len())
+        .collect()
     )
-    print("\n")
-    print(result2.collect())
-    print(f"Number of surgeries grouped by surgery type: {len(result2.collect())}")
+    # print("\n")
+    # print(result2)
+    # print(f"Number of surgeries grouped by surgery type: {len(result2.collect())}")
     
-    elapsed, cpu_per_core, cpu_process = metrics.stop(start_time)
-    # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU usage per core: {cpu_per_core}")
-    # print(f" CPU usage: {cpu_process}")
+    elapsed, cpu_time = metrics.stop(start_time, process_before)
 
-    return elapsed, cpu_per_core, cpu_process
+    # print(f" Execution time: {elapsed:.4f}s")
+    # print(f" CPU time: {cpu_time:.4f}s")
+
+    return elapsed, cpu_time
+
 
 # Saving results
 n = 100
 time_rows = []
+cpu_rows = []
 
 for i in range(n):
-    elapsed, cpu_per_core, cpu_process = single_table_1(dataframes)
+    elapsed, cpu_time = single_table_1(dataframes)
     time_rows.append(["patients_by_gender", i, elapsed])
+    cpu_rows.append(["patients_by_gender", i, cpu_time])
 
 for i in range(n):
-    elapsed, cpu_per_core, cpu_process = single_table_2(dataframes)
+    elapsed, cpu_time = single_table_2(dataframes)
     time_rows.append(["surgeries_by_type", i, elapsed])
+    cpu_rows.append(["surgeries_by_type", i, cpu_time])
 
 f = open("single_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "elapsed_s"])
 writer.writerows(time_rows)
 f.close()
-    
+
+f = open("single_cpu_polars.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_time_s"])
+writer.writerows(cpu_rows)
+f.close()
 
 
 

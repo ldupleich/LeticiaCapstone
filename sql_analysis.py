@@ -233,8 +233,8 @@ row_counts(conn)
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # AGGREGATION 1: Single table aggregation tasks
 
-print("\n")
-print("SINGLE TABLE AGGREGATION:")
+# print("\n")
+# print("SINGLE TABLE AGGREGATION:")
 
 cur = conn.cursor()
 
@@ -242,7 +242,7 @@ cur = conn.cursor()
 def single_table_1():
     """Groups patients by gender."""
 
-    start_time = metrics.start()
+    start_time, process_before = metrics.start()
 
     cur.execute("""
         SELECT gender, COUNT(*) AS total_patients
@@ -255,46 +255,53 @@ def single_table_1():
         print(result)
     print(f" Total number of patients grouped by gender: {len(result1)}")
 
-    elapsed, cpu_per_core, cpu_process = metrics.stop(start_time)
-    # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU usage: {cpu_process}")
+    elapsed, cpu_time = metrics.stop(start_time, process_before)
+    print(f" Execution time: {elapsed:.4f}s")
+    print(f" CPU time: {cpu_time}")
 
-    return elapsed, cpu_per_core, cpu_process
+    return elapsed, cpu_time
 
 # Single table 2
 def single_table_2():
     """Groups number of surgeries by surgery type."""
 
-    start_time = metrics.start()
+    start_time, process_before = metrics.start()
 
     cur.execute("""
         SELECT surgery_type, COUNT(*) AS total_surgeries
         FROM surgeryrecord
         GROUP BY surgery_type
     """)
-    print("\n")
+    # print("\n")
     result2 = cur.fetchall()
+    
     for result in result2:
         print(result)
     print(f" Number of surgeries grouped by surgery type: {len(result2)}")
 
-    elapsed, cpu_per_core, cpu_process = metrics.stop(start_time)
-    # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU usage: {cpu_process}")
+    elapsed, cpu_time = metrics.stop(start_time, process_before)
+    print(f" Execution time: {elapsed:.4f}s")
+    print(f" CPU time: {cpu_time}")
 
-    return elapsed, cpu_per_core, cpu_process
+    return elapsed, cpu_time
 
+for i in range(10):
+    single_table_1()
 # Results
+"""
 n = 100
 time_rows = []
+cpu_rows = []
 
 for i in range(n):
-    elapsed, cpu_per_core, cpu_process = single_table_1()
+    elapsed, cpu_time = single_table_1()
     time_rows.append(["patients_by_gender", i, elapsed])
+    cpu_rows.append(["patients_by_gender", i, cpu_time])
 
 for i in range(n):
-    elapsed, cpu_per_core, cpu_process = single_table_2()
+    elapsed, cpu_time = single_table_2()
     time_rows.append(["surgeries_by_type", i, elapsed])
+    cpu_rows.append(["surgeries_by_type", i, cpu_time])
 
 f = open("single_time_sql.csv", "w", newline="")
 writer = csv.writer(f)
@@ -302,7 +309,14 @@ writer.writerow(["query", "trial", "elapsed_s"])
 writer.writerows(time_rows)
 f.close()
 
-# Close cursor and connection with database
+f = open("single_cpu_sql.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_time_s"])
+writer.writerows(cpu_rows)
+f.close()
+"""
+
+# Close cursor and connection
 cur.close()
 conn.close()
 
