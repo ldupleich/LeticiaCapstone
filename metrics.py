@@ -22,9 +22,9 @@ def stop(start_time, process_before):
     """
     Stops the performance metrics and actually computes the outputs.
     """
-    elapsed = time.time() - start_time
+    elapsed = (time.time() - start_time) * 1000
     process_after = process.cpu_times()
-    cpu_time = (process_after.user - process_before.user) + (process_after.system - process_before.system)
+    cpu_time = ((process_after.user - process_before.user) + (process_after.system - process_before.system)) * 1000
     cpu_percent = process.cpu_percent()
     cpu_percent_per_core = cpu_percent / psutil.cpu_count()
 

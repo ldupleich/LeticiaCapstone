@@ -136,7 +136,7 @@ def check_duplicates(dataframes):
     return dataframes
 
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-# PREPROCESSING 5: Print row count to compare with Polars
+# PREPROCESSING 5: Print row count to compare with sql
 
 def row_counts(dataframes):
     total_count = 0
@@ -147,114 +147,5 @@ def row_counts(dataframes):
         
         # print(f" {sheet}: {count} rows")
 
-    # print("\n")
-    print(f" Total: {total_count}")
-
-# –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-# PREPROCESSING 6: Print counts before and after to see how much was changed
-
-dataframes = load_data()
-
-# print("\n")
-# print("Row counts BEFORE preprocessing:")
-
-# for sheet, df in dataframes.items():
-    # print(f" {sheet}: {len(df)} rows")
-
-dataframes = remove_nulls(dataframes)
-dataframes = remove_outliers(dataframes)
-dataframes = check_duplicates(dataframes)
-
-# print("\n")
-# print("Row counts AFTER preprocessing:")
-row_counts(dataframes)
-
-# –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-# AGGREGATION 1: Single table aggregation tasks
-
-#print("\n")
-# print("SINGLE TABLE AGGREGATION:")
-
-# Single table 1
-def single_table_1(dataframes):
-    """Groups patients by gender."""
-    start_time, process_before = metrics.start()
-
-    result1 = (
-        dataframes["Patients"]
-        .lazy() # recommended instead of eager
-        .group_by("Gender")
-        .agg(pl.len())
-        .collect()
-    )
-    # print(result1)
-    # print(f"Number of patients grouped by gender: {len(result1)}")
-
-    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
-    
-    # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU time: {cpu_time:.4f}s")
-
-    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
-
-# Single table 2
-def single_table_2(dataframes):
-    """Groups number of surgeries by surgery type."""
-    start_time, process_before = metrics.start()
-
-    result2 = (
-        dataframes["SurgeryRecord"]
-        .lazy() # recommended instead of eager
-        .group_by("surgery_Type")
-        .agg(pl.len())
-        .collect()
-    )
-    # print("\n")
-    # print(result2)
-    # print(f"Number of surgeries grouped by surgery type: {len(result2)}")
-    
-    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
-
-    # print(f" Execution time: {elapsed:.4f}s")
-    # print(f" CPU time: {cpu_time:.4f}s")
-
-    return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
-
-
-# Saving results
-n = 100
-time_rows = []
-cpu_time_rows = []
-cpu_percent_rows = []
-
-for i in range(n):
-    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_1(dataframes)
-    time_rows.append(["patients_by_gender", i, elapsed])
-    cpu_time_rows.append(["patients_by_gender", i, cpu_time])
-    cpu_percent_rows.append(["patients_by_gender", i, cpu_percent_per_core])
-
-for i in range(n):
-    elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_2(dataframes)
-    time_rows.append(["surgeries_by_type", i, elapsed])
-    cpu_time_rows.append(["surgeries_by_type", i, cpu_time])
-    cpu_percent_rows.append(["surgeries_by_type", i, cpu_percent_per_core])
-
-# Creating output .csv files
-f = open("single_time_polars.csv", "w", newline="")
-writer = csv.writer(f)
-writer.writerow(["query", "trial", "elapsed_s"])
-writer.writerows(time_rows)
-f.close()
-
-f = open("single_cpu_time_polars.csv", "w", newline="")
-writer = csv.writer(f)
-writer.writerow(["query", "trial", "cpu_time_s"])
-writer.writerows(cpu_time_rows)
-f.close()
-
-f = open("single_cpu_percent_polars.csv", "w", newline="")
-writer = csv.writer(f)
-writer.writerow(["query", "trial", "cpu_percent"])
-writer.writerows(cpu_percent_rows)
-f.close()
+    print(f" Total row count: {total_count}")
 
