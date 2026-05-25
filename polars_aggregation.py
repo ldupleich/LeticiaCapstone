@@ -73,21 +73,24 @@ def single_table_2(dataframes):
 # Saving results
 time_rows_single = []
 cpu_percent_rows_single = []
+cpu_time_rows_single = []
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_1(dataframes)
     time_rows_single.append(["patients_by_gender", i, elapsed])
     cpu_percent_rows_single.append(["patients_by_gender", i, cpu_percent_per_core])
+    cpu_time_rows_single.append(["patients_by_gender", i, cpu_time])
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = single_table_2(dataframes)
     time_rows_single.append(["surgeries_by_type", i, elapsed])
     cpu_percent_rows_single.append(["surgeries_by_type", i, cpu_percent_per_core])
+    cpu_time_rows_single.append(["surgeries_by_type", i, cpu_time])
 
 # Creating output .csv files
 f = open("single_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
-writer.writerow(["query", "trial", "elapsed_s"])
+writer.writerow(["query", "trial", "elapsed_ms"])
 writer.writerows(time_rows_single)
 f.close()
 
@@ -95,6 +98,12 @@ f = open("single_cpu_percent_polars.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "cpu_percent"])
 writer.writerows(cpu_percent_rows_single)
+f.close()
+
+f = open("single_cpu_time_polars.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_time_ms"])
+writer.writerows(cpu_time_rows_single)
 f.close()
 
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -143,21 +152,25 @@ def two_table_2(dataframes):
 # Saving results
 time_rows_two = []
 cpu_percent_rows_two = []
+cpu_time_rows_two = []
+
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = two_table_1(dataframes)
     time_rows_two.append(["doctors_per_dept", i, elapsed])
     cpu_percent_rows_two.append(["doctors_per_dept", i, cpu_percent_per_core])
+    cpu_time_rows_two.append(["doctors_per_dept", i, cpu_time])
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = two_table_2(dataframes)
     time_rows_two.append(["appointments_per_patient", i, elapsed])
     cpu_percent_rows_two.append(["appointments_per_patient", i, cpu_percent_per_core])
+    cpu_time_rows_two.append(["appointments_per_patient", i, cpu_time])
 
 # Creating output .csv files
 f = open("two_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
-writer.writerow(["query", "trial", "elapsed_s"])
+writer.writerow(["query", "trial", "elapsed_ms"])
 writer.writerows(time_rows_two)
 f.close()
 
@@ -167,10 +180,16 @@ writer.writerow(["query", "trial", "cpu_percent"])
 writer.writerows(cpu_percent_rows_two)
 f.close()
 
+f = open("two_cpu_time_polars.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_time_ms"])
+writer.writerows(cpu_time_rows_two)
+f.close()
+
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # AGGREGATION 3: Multi-table (three-or-more) aggregation tasks
 
-# Multi-table 3
+# Three-table 1
 def three_table_1(dataframes):
     """Number of surgeries per department per month"""
     start_time, process_before = metrics.start()
@@ -195,7 +214,7 @@ def three_table_1(dataframes):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = metrics.stop(start_time, process_before)
     return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
-# Multi-table 4
+# Three-table 2
 def three_table_2(dataframes):
     """
     Number of appointments per doctor per department
@@ -221,21 +240,24 @@ def three_table_2(dataframes):
 # Saving results
 time_rows_three = []
 cpu_percent_rows_three = []
+cpu_time_rows_three = []
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = three_table_1(dataframes)
     time_rows_three.append(["surgeries_per_dept_per_month", i, elapsed])
     cpu_percent_rows_three.append(["surgeries_per_dept_per_month", i, cpu_percent_per_core])
+    cpu_time_rows_three.append(["surgeries_per_dept_per_month", i, cpu_time])
 
 for i in range(n):
     elapsed, cpu_time, cpu_percent_per_core, cpu_percent = three_table_2(dataframes)
     time_rows_three.append(["appointments_per_doctor_per_dept", i, elapsed])
     cpu_percent_rows_three.append(["appointments_per_doctor_per_dept", i, cpu_percent_per_core])
+    cpu_time_rows_three.append(["appointments_per_doctor_per_dept", i, cpu_time])
 
 # Creating output .csv files
 f = open("three_time_polars.csv", "w", newline="")
 writer = csv.writer(f)
-writer.writerow(["query", "trial", "elapsed_s"])
+writer.writerow(["query", "trial", "elapsed_ms"])
 writer.writerows(time_rows_three)
 f.close()
 
@@ -243,5 +265,11 @@ f = open("three_cpu_percent_polars.csv", "w", newline="")
 writer = csv.writer(f)
 writer.writerow(["query", "trial", "cpu_percent"])
 writer.writerows(cpu_percent_rows_three)
+f.close()
+
+f = open("three_cpu_time_polars.csv", "w", newline="")
+writer = csv.writer(f)
+writer.writerow(["query", "trial", "cpu_time_ms"])
+writer.writerows(cpu_time_rows_three)
 f.close()
 

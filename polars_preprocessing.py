@@ -40,7 +40,19 @@ def load_data():
     dataframes = {}
 
     for sheet in tables:
-        dataframes[sheet] = pl.read_excel(excel, sheet_name=sheet)
+        df = pl.read_excel(excel, sheet_name=sheet)
+
+        # Round float columns to 2 decimal places
+        for col in df.columns:
+            if df[col].dtype in (pl.Float32, pl.Float64):
+                df = df.with_columns(pl.col(col).round(2))
+
+        # Fix time-only columns stored as dummy datetimes by Excel
+        for col in ["start_time", "end_time"]:
+            if col in df.columns:
+                df = df.with_columns(pl.col(col).dt.time())
+
+        dataframes[sheet] = df
 
     # print("Data loaded successfully")
     return dataframes
