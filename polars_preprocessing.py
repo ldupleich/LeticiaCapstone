@@ -1,3 +1,31 @@
+"""
+This script is responsible for the preprocessing of the Hopsital Management Dataset
+from Excel into Polars dataframes that can be used in the aggregation tasks.
+
+The main steps necessary are:
+    1. Load the data from Excel
+    2. Remove any NULLs only if they appear in the dictionary
+    3. Remove outliers (only numerical columns)
+    4. Check for duplicate rows and remove if necessary (keep smallest primary key)
+    5. Print row count (used to compare with SQL)
+
+There are many additional checks within each function, and these were added as the code was
+being developed and errors were thrown.
+
+This file is imported and called prior to performing the aggregation tasks in "polars_aggregation".
+This means that this file does not have to be run independently, it will be run automatically when
+"polars_aggregation" is ran.
+
+Sources:
+- https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.drop_nulls.html
+- https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.quantile.html
+- https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.filter.html
+- https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.unique.html
+- https://www.geeksforgeeks.org/python/how-to-drop-row-in-polars-python/
+- https://www.geeksforgeeks.org/sql/sql-query-to-delete-duplicate-rows/
+- https://claude.ai/share/dc96d131-dbc5-4552-8307-6ac36a2e8e96
+"""
+
 import polars as pl
 import metrics
 import psutil
@@ -34,6 +62,8 @@ not_null = {
 def load_data():
     """
     Reads all sheets from the Excel file into a dict of Polars DataFrames.
+    The additional checks (e.g. round float columns) were inserted to make
+    the loading of the data more similar to SQL.
     """
 
     # Creating the dataframes from each sheet in the excel file
@@ -151,6 +181,10 @@ def check_duplicates(dataframes):
 # PREPROCESSING 5: Print row count to compare with sql
 
 def row_counts(dataframes):
+    """
+    Prints the remaining number of rows after preprocessing to compare with SQL.
+    The per-row count is also present but commented out.
+    """
     total_count = 0
 
     for sheet, df in dataframes.items():

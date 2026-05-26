@@ -1,3 +1,35 @@
+"""
+This script is used to convert the existing T-SQL Hospital Management SQL file into
+a comparable PostgreSQL file without losing any critical information. The main
+transformations necessary to achieve this include:
+    - Removal of block or single line comments
+    - REmoving T-SQL specific statements (GO, USE, CREATE DATABASE...)
+    - Fixing semicolons between INSERT
+
+The easiest way to achieve this is by using regular expressions which can
+replace existing text that has a certain structure with new text. Below are
+some of the rules that were used in this file.
+
+REGEX NOTES
+- always start with ^ and end with $ for T-SQL statements
+- multiline to go across each line
+- ^\s* -> leading whitespace
+- USE\s+ -> space after keyword
+- \S+ -> any non whitespace (the db/table name)
+- \s*;?\s*$ -> optional whitespace, optional semicolon, end of line
+- r");\1\2" -> to put stuff back
+
+To ensure that that this file could be rerun, existing tables had to be dropped
+or else errors would arise stating that the tables already exist.
+
+The converted file can be found in the "archive" directory along with the previous
+T-SQL file.
+
+Sources:
+- https://docs.python.org/3/library/re.html
+- https://claude.ai/chat/4c7376e3-5d52-47f8-9836-cafcd594da8d
+"""
+
 import re
 import os
 
@@ -23,17 +55,10 @@ DROP TABLE IF EXISTS Room CASCADE;
 DROP TABLE IF EXISTS Department CASCADE;
 """
 
-# REGEX NOTES
-# always start with ^ and end with $ for T-SQL statements
-# multiline to go across each line
-# ^\s* -> leading whitespace
-# USE\s+ -> space after keyword
-# \S+ -> any non whitespace (the db/table name)
-# \s*;?\s*$ -> optional whitespace, optional semicolon, end of line
-# r");\1\2" -> to put stuff back
-
-
 def convert_sql_postgres(sql):
+    """
+    Takes a T-SQL string and returns a compatible PostgreSQL string.
+    """
 
     # Strip UTF-8 BOM
     sql = sql.lstrip("\ufeff")

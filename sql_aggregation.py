@@ -1,8 +1,34 @@
+"""
+This script runs the SQL-based aggregation tasks across the selected three complexity levels:
+    1. Single-table (no join statements)
+    2. Two-tables (one join statement)
+    3. Three-tables (two join statements)
+
+The script first preprocesses the data (null removal, outlier removal, and duplicate checking) using
+the in-house functions in the file sql.preprocessing from this same directory. Then, the aggregation
+tasks are run.
+
+Each task is executed 100 times (n=100), and for each execution, the execution time, CPU time, and CPU
+percentage are recorded. The results are exported to CSV files for further analysis.
+
+Given that SQL does not make use of multi-core parallelism, the overall CPU percentage is recorded.
+
+There are several print statements that have been commented out. These were used for checking the
+correctness of the program. I have left these to show some of the process of creating this file.
+
+Sources:
+- https://www.postgresql.org/docs/current/tutorial-join.html
+- https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT
+- https://docs.python.org/3/library/csv.html
+"""
+
 import psycopg2
 from psycopg2 import sql
 import metrics
 import csv
 import sql_preprocessing as sp
+
+n = 100
 
 # –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # PREPROCESS
@@ -15,7 +41,6 @@ sp.remove_nulls(conn)
 sp.remove_outliers(conn)
 sp.check_duplicates(conn)
 
-# print("\n")
 # print("Row counts AFTER preprocessing:")
 sp.row_counts(conn)
 
@@ -25,7 +50,9 @@ sp.row_counts(conn)
 # Single table 1
 
 def single_table_1():
-    """Groups patients by gender."""
+    """
+    Groups patients by gender.
+    """
 
     start_time, process_before = metrics.start()
 
@@ -49,7 +76,9 @@ def single_table_1():
 
 # Single table 2
 def single_table_2():
-    """Groups number of surgeries by surgery type."""
+    """
+    Groups number of surgeries by surgery type.
+    """
 
     start_time, process_before = metrics.start()
 
@@ -73,7 +102,6 @@ def single_table_2():
     return elapsed, cpu_time, cpu_percent_per_core, cpu_percent
 
 # Results
-n = 100
 time_rows_single = []
 cpu_percent_rows_single = []
 cpu_time_rows_single = []
@@ -114,7 +142,10 @@ f.close()
 
 # Two-table 1
 def two_table_1():
-    """Number of doctors per department."""
+    """
+    Number of doctors per department.
+    """
+    
     start_time, process_before = metrics.start()
 
     cur.execute("""
@@ -132,7 +163,10 @@ def two_table_1():
 
 # Two-table 2
 def two_table_2():
-    """Number of appointments per patient."""
+    """
+    Number of appointments per patient.
+    """
+    
     start_time, process_before = metrics.start()
 
     cur.execute("""
@@ -189,7 +223,10 @@ f.close()
 
 # Three-table 1
 def three_table_1():
-    """Number of surgeries per department per month."""
+    """
+    Number of surgeries per department per month.
+    """
+    
     start_time, process_before = metrics.start()
 
     cur.execute("""
@@ -208,7 +245,10 @@ def three_table_1():
 
 # Three-table 2
 def three_table_2():
-    """Number of appointments per doctor per department."""
+    """
+    Number of appointments per doctor per department.
+    """
+    
     start_time, process_before = metrics.start()
 
     cur.execute("""

@@ -1,3 +1,23 @@
+"""
+This script contains the metrics that will be extracted upon running the
+various aggregation tasks:
+    - Execution (elapsed) time
+    - CPU use (per core for Polars, overall for SQL)
+    - CPU time
+
+Execution time and CPU time are both outputted in milliseconds, and CPU use is
+outputted as a percentage.
+
+This file is imported into "polars_aggregation", and runs automatically
+when "polars_aggregation" runs, so it does not have to be executed individually.
+
+Sources:
+- https://www.geeksforgeeks.org/python/psutil-module-in-python/
+- https://psutil.readthedocs.io/stable/
+- https://pypi.org/project/psutil/
+- https://docs.python.org/3/library/time.html 
+"""
+
 import time
 import psutil
 import os

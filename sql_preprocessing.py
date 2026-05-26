@@ -1,3 +1,30 @@
+"""
+This script is responsible for the preprocessing of the SQL Hopsital Management Dataset
+so that they can be used in the aggregation tasks.
+
+The main steps necessary are:
+    1. Load the data from the SQL file
+    2. Remove any NULLs only if they appear in the dictionary
+    3. Remove outliers (only numerical columns)
+    4. Check for duplicate rows and remove if necessary (keep smallest primary key)
+    5. Print row count (used to compare with Polars)
+
+There are many additional checks within each function, and these were added as the code was
+being developed and errors were thrown.
+
+This file is imported and called prior to performing the aggregation tasks in "sql_aggregation".
+This means that this file does not have to be run independently, it will be run automatically when
+"sql_aggregation" is ran.
+
+Sources:
+- https://www.geeksforgeeks.org/sql/what-is-cursor-in-sql/
+- https://www.postgresql.org/docs/current/functions-conditional.html
+- https://www.w3schools.com/sql/sql_null_values.asp
+- https://www.geeksforgeeks.org/sql/sql-query-to-delete-duplicate-rows/
+- https://www.w3schools.com/sql/sql_delete.asp
+- https://www.postgresql.org/docs/9.4/functions-aggregate.html
+"""
+
 import psycopg2
 from psycopg2 import sql
 import metrics
@@ -48,6 +75,10 @@ not_null = {
 # PREPROCESSING 1: Load data from sql file
 
 def load_data(conn):
+    """
+    Loads the Hospital Management Dataset into a PostgreSQL dataset.
+    """
+    
     cur = conn.cursor() # open cursor
  
     with open("archive/Hospital_Management_System_postgres.sql", "r", encoding="utf-8-sig") as f:
@@ -66,6 +97,7 @@ def remove_nulls(conn):
     """
     Scans all the values in all the loaded tables and removes NULL values.
     """
+    
     cur = conn.cursor()
  
     for table, columns in not_null.items():
@@ -187,6 +219,11 @@ def check_duplicates(conn):
 # PREPROCESSING 5: Print row count to compare with Polars
 
 def row_counts(conn):
+    """
+    Prints the remaining number of rows after preprocessing to compare with Polars.
+    The per-row count is also present but commented out.
+    """
+    
     cur = conn.cursor() # open cursor
 
     total_count = 0
