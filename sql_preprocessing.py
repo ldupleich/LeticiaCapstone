@@ -23,6 +23,7 @@ Sources:
 - https://www.geeksforgeeks.org/sql/sql-query-to-delete-duplicate-rows/
 - https://www.w3schools.com/sql/sql_delete.asp
 - https://www.postgresql.org/docs/9.4/functions-aggregate.html
+- https://claude.ai/share/dc96d131-dbc5-4552-8307-6ac36a2e8e96
 """
 
 import psycopg2
