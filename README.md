@@ -49,3 +49,6 @@ Three-table
 2. Run `convert.py`
 3. Run `polars_aggregation.py`
 4. Run `sql_aggregation.py`
+
+## AI Use
+Claude conversation: https://claude.ai/chat/4c7376e3-5d52-47f8-9836-cafcd594da8d
