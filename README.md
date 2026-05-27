@@ -2,9 +2,6 @@
 
 ## General Details
 - Author: Leticia Dupleich Smith
-- Supervisor: dr. Luis Aguilar Suarez
-- Reader: dr. Chris Jones
-- Tutor: dr. Luis Aguilar Suarez
 - Major: Sciences
 - Date of submission: 27 May 2026
 
