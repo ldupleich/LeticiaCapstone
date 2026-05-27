@@ -27,7 +27,6 @@ T-SQL file.
 
 Sources:
 - https://docs.python.org/3/library/re.html
-- https://claude.ai/chat/4c7376e3-5d52-47f8-9836-cafcd594da8d
 """
 
 import re
